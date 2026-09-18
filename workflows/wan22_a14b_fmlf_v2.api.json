@@ -1,0 +1,153 @@
+{
+  "1": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": {
+      "unet_name": "{unet_high}"
+    }
+  },
+  "2": {
+    "class_type": "UnetLoaderGGUF",
+    "inputs": {
+      "unet_name": "{unet_low}"
+    }
+  },
+  "3": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "{lora_high}",
+      "strength_model": {lora_strength}
+    }
+  },
+  "4": {
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["2", 0],
+      "lora_name": "{lora_low}",
+      "strength_model": {lora_strength}
+    }
+  },
+  "5": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": ["3", 0],
+      "shift": {shift}
+    }
+  },
+  "6": {
+    "class_type": "ModelSamplingSD3",
+    "inputs": {
+      "model": ["4", 0],
+      "shift": {shift}
+    }
+  },
+  "7": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "umt5_xxl_fp8_e4m3fn_scaled.safetensors",
+      "type": "wan"
+    }
+  },
+  "8": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "{prompt}",
+      "clip": ["7", 0]
+    }
+  },
+  "9": {
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "text": "{negative_prompt}",
+      "clip": ["7", 0]
+    }
+  },
+  "10": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "{vae_name}"
+    }
+  },
+  "11": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "{start_image}"
+    }
+  },
+  "11b": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "{end_image}"
+    }
+  },
+  "12": {
+    "class_type": "WanFirstMiddleLastFrameToVideo",
+    "inputs": {
+      "positive": ["8", 0],
+      "negative": ["9", 0],
+      "vae": ["10", 0],
+      "width": {width},
+      "height": {height},
+      "length": {length},
+      "batch_size": 1,
+      "start_image": ["11", 0],
+      "end_image": ["11b", 0],
+      "middle_frame_ratio": {middle_frame_ratio},
+      "high_noise_mid_strength": {high_noise_mid_strength},
+      "low_noise_start_strength": {low_noise_start_strength},
+      "low_noise_mid_strength": {low_noise_mid_strength},
+      "low_noise_end_strength": {low_noise_end_strength},
+      "structural_repulsion_boost": {structural_repulsion_boost}
+    }
+  },
+  "13": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": ["5", 0],
+      "add_noise": "enable",
+      "noise_seed": {seed},
+      "steps": {steps},
+      "cfg": {cfg},
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": ["12", 0],
+      "negative": ["12", 2],
+      "latent_image": ["12", 3],
+      "start_at_step": 0,
+      "end_at_step": {switch_step},
+      "return_with_leftover_noise": "enable"
+    }
+  },
+  "14": {
+    "class_type": "KSamplerAdvanced",
+    "inputs": {
+      "model": ["6", 0],
+      "add_noise": "disable",
+      "noise_seed": {seed},
+      "steps": {steps},
+      "cfg": {cfg},
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "positive": ["12", 1],
+      "negative": ["12", 2],
+      "latent_image": ["13", 0],
+      "start_at_step": {switch_step},
+      "end_at_step": 10000,
+      "return_with_leftover_noise": "disable"
+    }
+  },
+  "15": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["14", 0],
+      "vae": ["10", 0]
+    }
+  },
+  "16": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["15", 0],
+      "filename_prefix": "{output_prefix}"
+    }
+  }
+}
