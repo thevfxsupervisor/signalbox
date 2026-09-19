@@ -143,8 +143,14 @@ Three things the drawing is meant to make obvious:
 - **The release pointer feeds the service, not the other way round.** "What does this box actually
   execute" has an answer you can read off disk.
 
-The spec is [docs/diagrams/architecture.json](docs/diagrams/architecture.json). To rebuild the
-interactive version, with pan, zoom, search and relationship tracing:
+**An interactive version is live**, with trace animation, pan, zoom, search and
+relationship tracing, at
+<https://thevfxsupervisor.com/projects/signalbox/>. GitHub renders the static
+image above; the page runs the real thing.
+
+The spec is [docs/diagrams/architecture.json](docs/diagrams/architecture.json),
+and [docs/diagrams/architecture.svg](docs/diagrams/architecture.svg) is the
+vector export. To rebuild the interactive version yourself:
 
     npx -y skills add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes
     node ~/.claude/skills/archify/bin/archify.mjs deliver architecture \

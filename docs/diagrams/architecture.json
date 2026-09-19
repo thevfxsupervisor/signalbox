@@ -4,7 +4,8 @@
   "meta": {
     "title": "SignalBox: the tracker is the state machine",
     "output": "signalbox-v01.html",
-    "quality_profile": "standard"
+    "quality_profile": "standard",
+    "animation": "trace"
   },
   "components": [
     {
