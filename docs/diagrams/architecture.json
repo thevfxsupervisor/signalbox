@@ -1,0 +1,407 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "SignalBox: the tracker is the state machine",
+    "output": "signalbox-v01.html",
+    "quality_profile": "standard"
+  },
+  "components": [
+    {
+      "id": "operator",
+      "type": "external",
+      "label": "Operator",
+      "sublabel": "the trigger",
+      "pos": [
+        60,
+        300
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "tracker",
+      "type": "database",
+      "label": "Production tracker",
+      "sublabel": "the state machine",
+      "tag": "no queue",
+      "pos": [
+        360,
+        100
+      ],
+      "size": [
+        230,
+        520
+      ]
+    },
+    {
+      "id": "service",
+      "type": "backend",
+      "label": "standing service",
+      "sublabel": "polls every 45s",
+      "tag": "single instance",
+      "pos": [
+        720,
+        130
+      ],
+      "size": [
+        210,
+        74
+      ]
+    },
+    {
+      "id": "watchers",
+      "type": "backend",
+      "label": "12 watchers",
+      "sublabel": "fixed order",
+      "pos": [
+        720,
+        300
+      ],
+      "size": [
+        210,
+        66
+      ]
+    },
+    {
+      "id": "deploy",
+      "type": "security",
+      "label": "deploy seam",
+      "sublabel": "atomic activate",
+      "pos": [
+        720,
+        470
+      ],
+      "size": [
+        210,
+        66
+      ]
+    },
+    {
+      "id": "pointer",
+      "type": "database",
+      "label": "release pointer",
+      "sublabel": "what this box runs",
+      "pos": [
+        720,
+        600
+      ],
+      "size": [
+        210,
+        66
+      ]
+    },
+    {
+      "id": "llm",
+      "type": "cloud",
+      "label": "prompt revision",
+      "sublabel": "note + components",
+      "pos": [
+        1030,
+        80
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "panel",
+      "type": "backend",
+      "label": "panel compose",
+      "sublabel": "design + action",
+      "pos": [
+        1030,
+        210
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "qc",
+      "type": "security",
+      "label": "deterministic check",
+      "sublabel": "can only refuse",
+      "tag": "replaced a 38% model",
+      "pos": [
+        1030,
+        340
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "video",
+      "type": "backend",
+      "label": "video generate",
+      "sublabel": "re-reads approval",
+      "pos": [
+        1030,
+        470
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "cut",
+      "type": "backend",
+      "label": "episode cut",
+      "sublabel": "latest-approved",
+      "pos": [
+        1030,
+        600
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "comfyui",
+      "type": "backend",
+      "label": "ComfyUI",
+      "sublabel": "workflow per stage",
+      "pos": [
+        1340,
+        210
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "prov",
+      "type": "security",
+      "label": "provenance gate",
+      "sublabel": "recorded vs sent",
+      "tag": "reports, never blocks",
+      "pos": [
+        1340,
+        400
+      ],
+      "size": [
+        200,
+        66
+      ]
+    },
+    {
+      "id": "versions",
+      "type": "database",
+      "label": "Versions",
+      "sublabel": "at Pending Review",
+      "pos": [
+        1340,
+        700
+      ],
+      "size": [
+        210,
+        66
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "one box: service + release seam",
+      "wraps": [
+        "service",
+        "watchers",
+        "deploy",
+        "pointer"
+      ],
+      "pad": 22
+    },
+    {
+      "kind": "security-group",
+      "label": "automatic steps, human gates",
+      "wraps": [
+        "llm",
+        "panel",
+        "qc",
+        "video",
+        "cut"
+      ],
+      "pad": 14
+    }
+  ],
+  "connections": [
+    {
+      "from": "operator",
+      "to": "tracker",
+      "label": "Note + status",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "tracker",
+      "to": "service",
+      "label": "polled, not pushed",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "service",
+      "to": "watchers",
+      "label": "runs 12 in order",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "from": "pointer",
+      "to": "service",
+      "label": "names the release",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "left"
+    },
+    {
+      "from": "deploy",
+      "to": "pointer",
+      "label": "atomic, with rollback",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "from": "watchers",
+      "to": "llm",
+      "label": "note + prompt",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [
+        980,
+        250
+      ]
+    },
+    {
+      "from": "watchers",
+      "to": "panel",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "watchers",
+      "to": "video",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "watchers",
+      "to": "cut",
+      "label": "rebuilds",
+      "fromSide": "right",
+      "toSide": "left",
+      "labelAt": [
+        980,
+        565
+      ]
+    },
+    {
+      "from": "llm",
+      "to": "panel",
+      "label": "revised prompt, requeued",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "from": "panel",
+      "to": "comfyui",
+      "label": "workflow template",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "from": "video",
+      "to": "comfyui",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "from": "panel",
+      "to": "qc",
+      "label": "candidates",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "from": "qc",
+      "to": "video",
+      "label": "parks, or leaves unapproved",
+      "variant": "security",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "from": "comfyui",
+      "to": "versions",
+      "label": "frames and clips",
+      "fromSide": "right",
+      "toSide": "right"
+    },
+    {
+      "from": "prov",
+      "to": "versions",
+      "label": "mismatch posted as a Note",
+      "variant": "dashed",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "labelDy": 24
+    },
+    {
+      "from": "versions",
+      "to": "tracker",
+      "label": "published back, awaiting a person",
+      "variant": "emphasis",
+      "fromSide": "bottom",
+      "toSide": "bottom"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "The central decision",
+      "items": [
+        "The production tracker IS the state machine",
+        "No queue, no job file, no second admin tool nobody opens",
+        "Every arrow reads or writes a tracker field",
+        "So the record of what ran lands where the production already looks"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Every gate is a person",
+      "items": [
+        "A deterministic check can only REFUSE, never approve",
+        "It parks the work and says why; the decision stays with a human",
+        "The one step that costs GPU time re-reads the approval on the way in",
+        "Nothing self-approves, and that is the product"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Why it is auditable",
+      "items": [
+        "Provenance is written by the code that sent the prompt",
+        "A mismatch is posted as a Note, and reports rather than blocks",
+        "A vision QC gate measured 38% and was switched off, not tuned",
+        "A canary is proven to trip before any clean result is believed"
+      ]
+    }
+  ]
+}

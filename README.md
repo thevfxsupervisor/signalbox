@@ -125,6 +125,31 @@ before a clean result gets believed, and which AI component to switch off the mo
 badly instead of tuning around a number that would not move. Directing a team of agents to build a
 production system, and knowing how to verify what they built, is the actual subject of this repo.
 
+## The whole thing, in one picture
+
+![SignalBox architecture: the tracker is the state machine, every gate is a person](docs/diagrams/architecture.png)
+
+Read it left to right and then back again, because it is a loop. The operator writes a Note and sets
+a status; the standing service polls the tracker rather than being pushed to, and runs twelve
+watchers in a fixed order; the automatic steps compose, check and generate; results are published
+back as Versions awaiting a person. Nothing in the picture holds state except the tracker.
+
+Three things the drawing is meant to make obvious:
+
+- **The deterministic check has one arrow out, and it is not an approval.** It can park work and say
+  why. Approval only ever comes from the human gate above it.
+- **The provenance gate reports, it does not block.** A mismatch between what was recorded and what
+  was actually sent is posted as a Note on the Version, not swallowed into a log.
+- **The release pointer feeds the service, not the other way round.** "What does this box actually
+  execute" has an answer you can read off disk.
+
+The spec is [docs/diagrams/architecture.json](docs/diagrams/architecture.json). To rebuild the
+interactive version, with pan, zoom, search and relationship tracing:
+
+    npx -y skills add tt-a1i/archify --skill archify --agent claude-code --global --copy --yes
+    node ~/.claude/skills/archify/bin/archify.mjs deliver architecture \
+      docs/diagrams/architecture.json architecture.html
+
 ## Layout
 
 | path | what |
